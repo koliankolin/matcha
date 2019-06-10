@@ -1,0 +1,17 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Personal Page of user {{ user.login }}
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li>Login: {{ user.login }}</li>
+        <li>Email: {{ user.email }}</li>
+    </ul>
+
+    <a href="#">Change Personal Info</a><br>
+    <a href="#">Change Password</a><br>
+    <a href="{{ path_for("change-email") }}">Change Email</a><br>
+    <a href="{{ path_for("change-login") }}">Change Login</a>
+{% endblock %}

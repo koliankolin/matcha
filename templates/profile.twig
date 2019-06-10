@@ -1,0 +1,12 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Personal Page of user {{ user.login }}
+{% endblock %}
+
+{% block content %}
+    <ul>
+        <li>Login: {{ user.login }}</li>
+        <li>Email: {{ user.email }}</li>
+    </ul>
+{% endblock %}

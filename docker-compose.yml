@@ -1,0 +1,56 @@
+version: "3.1"
+services:
+    www:
+        build: .
+        ports:
+            - 8001:443
+            - 8080:80
+        volumes:
+            - ./public:/var/www/html/public
+            - ./src/:/var/www/html/src
+            - ./templates/:/var/www/html/templates
+            - ./vendor/:/var/www/html/vendor
+            - ./.htaccess:/var/www/html/.htaccess
+        links:
+            - db
+            - mail
+        networks:
+            - default
+    db:
+        image: mysql:8.0
+        ports:
+            - "3306:3306"
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+            MYSQL_DATABASE: myDb
+            MYSQL_USER: user
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+        #        volumes:
+        #            - ./dump:/docker-entrypoint-initdb.d
+        #            - ./conf:/etc/mysql/conf.d
+        #            - persistent:/var/lib/mysql
+        networks:
+            - default
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        links:
+            - db:db
+        ports:
+            - 8000:80
+        environment:
+            MYSQL_USER: user
+            MYSQL_PASSWORD: test
+            MYSQL_ROOT_PASSWORD: test
+    mail:
+        image: bytemark/smtp
+        restart: always
+        environment:
+            RELAY_HOST: smtp.gmail.com
+            RELAY_PORT: 587
+            RELAY_USERNAME: stanislav.gorchakov.1@gmail.com
+            RELAY_PASSWORD: koliankolin
+        networks:
+            - default
+volumes:
+    persistent:

@@ -1,0 +1,12 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Change Email
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <label for="newEmail">New Email: <input id="newEmail" name="newEmail" type="email" required></label><br>
+        <button type="submit">Change Email</button>
+    </form>
+{% endblock %}

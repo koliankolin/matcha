@@ -1,0 +1,12 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Change Login
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <label for="newLogin">New Login: <input id="newLogin" name="newLogin" type="text" required></label><br>
+        <button type="submit">Change Login</button>
+    </form>
+{% endblock %}
