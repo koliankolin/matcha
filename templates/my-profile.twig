@@ -6,11 +6,37 @@
 
 {% block content %}
     <ul>
-        <li>Login: {{ user.login }}</li>
-        <li>Email: {{ user.email }}</li>
+        <li>Login: {{ userInfo.login }}</li>
+        <li>Name: {{ userInfo.first_name }}</li>
+        <li>Surname: {{ userInfo.surname }}</li>
+        <li>Sex:
+            {% if userInfo.sex == 1  %}
+            Female
+            {% elseif userInfo.sex == 2 %}
+            Male
+            {% elseif userInfo.sex is not defined or userInfo.sex == 3 %}
+            Undefined
+            {% endif %}
+        </li>
+        <li>{% if userInfo.sex == 1 %}
+            She
+            {% elseif userInfo.sex == 2 %}
+            He
+            {% else %}
+            It
+            {% endif %} prefers:
+            {% if userInfo.sex_pref_id == 1 %}
+            Girls
+            {% elseif userInfo.sex_pref_id == 2 %}
+            Boys
+            {% else %}
+            Everyone
+            {% endif %}
+        </li>
+        <li>About: {{ userInfo.biography }}</li>
     </ul>
 
-    <a href="#">Change Personal Info</a><br>
+    <a href="{{ path_for("change-info") }}">Change Personal Info</a><br>
     <a href="#">Change Password</a><br>
     <a href="{{ path_for("change-email") }}">Change Email</a><br>
     <a href="{{ path_for("change-login") }}">Change Login</a>

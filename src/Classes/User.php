@@ -189,16 +189,7 @@ class User
             ]);
     }
 
-    //change password
-    public function changePasswordUser($newPassword)
-    {
-        if (!($user = $this->queryBuilder->filterDataByCol(USER::TABLE, "login", $this->login))) {
-            return false;
-        }
-        $user["password"] = hash("whirlpool", $newPassword);
-        return $this->queryBuilder->updateDataById(USER::TABLE, "id",
-            $user["id"], $user);
-    }
+
 
     private function createChangeEmailLetter($hash, $newEmail)
     {
@@ -234,5 +225,47 @@ class User
         }
         $letter = $this->createChangeEmailLetter($hash, $newEmail);
         return mail($newEmail, $letter["subject"], $letter["message"]);
+    }
+
+    private function createChangePasswordLetter($hash)
+    {
+        $subject = $_SESSION["logged"]["login"] . " | Change Password";
+        $message = '
+        
+        Hello, ' . $_SESSION["logged"]["login"] . '!
+        
+        
+        You need to reset your password.
+        Please click this link to change your password:
+        '
+            .$_SERVER["REQUEST_SCHEME"].'://'.$_SERVER["SERVER_NAME"].':'.$_SERVER["SERVER_PORT"].'/store-password?email=' . $this->email .
+            '&hash='. $hash . '
+        
+        ';
+        return ["subject" => $subject, "message" => $message];
+    }
+
+    //change password
+    public function changePasswordUser()
+    {
+        if (!($user = $this->queryBuilder->filterDataByCol(USER::TABLE, "id",
+            $_SESSION["logged"]["user_id"]))) {
+            return false;
+        }
+
+        try {
+            $hash = bin2hex(random_bytes(10));
+        } catch (Exception $exception) {
+            $hash = bin2hex(openssl_random_pseudo_bytes(10));
+        }
+
+        $_SESSION["pass_hash"] = $hash;
+        $letter = $this->createChangePasswordLetter($hash);
+        return mail($this->email, $letter["subject"], $letter["message"]);
+    }
+
+    public function storePassword($newPassword)
+    {
+        $this->queryBuilder->updateDataById("users")
     }
 }

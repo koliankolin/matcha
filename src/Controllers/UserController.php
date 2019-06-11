@@ -84,4 +84,88 @@ class UserController extends Controller
         }
         return $response->write("Email already exists");
     }
+
+    public function changeInfo(Request $request, Response $response)
+    {
+        $data = $request->getParams();
+        $tags = $data["tags"];
+        unset($data["tags"]);
+
+        if (!isset($data["sex"])) {
+            $data["sex"] = 3;
+        }
+        if (!isset($data["sex_pref"])) {
+            $data["sex_pref"] = 4;
+        }
+
+        $data = [
+            "user_id" => $_SESSION["logged"]["user_id"],
+            "sex" => $data["sex"],
+            "first_name" => $data["first_name"],
+            "surname" => $data["surname"],
+            "sex_pref_id" => $data["sex_pref"],
+            "biography" => $data["biography"]
+        ];
+
+
+        $userInfo = $this->c->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"]);
+
+        if (empty($userInfo)) {
+            $success = $this->c->qb->insertDataIntoTable("users_info", $data, false, true);
+        } else
+            $success = $this->c->qb->updateDataById("users_info", "user_id",
+                $_SESSION["logged"]["user_id"], $data);
+
+        if ($success) {
+            if ($this->addTags($tags)) {
+                return $response->withRedirect($this->router->pathFor("myProfile"));
+            }
+            return $response->write("Something went wrong 1");
+        }
+        return $response->write("Something went wrong 2");
+    }
+
+    private function addTags($tags)
+    {
+        $this->c->qb->deleteRowByCond("tags_users", [
+           "user_id" => $_SESSION["logged"]["user_id"]
+        ]);
+        $tags = preg_replace("/[^#a-zA-Z0-9]/", "", $tags);
+        $tags = array_filter(explode("#", $tags), function ($elem) {
+            return !empty($elem);
+        });
+        if ($tags) {
+            foreach ($tags as $tag) {
+                $tagBase = $this->c->qb->filterDataByCol("tags", "name", $tag)[0];
+                if (empty($tagBase)) {
+                    if (!$this->c->qb->insertDataIntoTable("tags", [
+                        "name" => $tag
+                    ], false, true)) {
+                        return false;
+                    }
+                    $idTag = $this->c->qb->filterDataByCol("tags", "name", $tag)[0]["id"];
+                    if (!$this->c->qb->insertDataIntoTable("tags_users", [
+                        "tag_id" => $idTag,
+                        "user_id" => $_SESSION["logged"]["user_id"]
+                    ], false, true)) {
+                        return false;
+                    }
+                } else {
+                    if (!$this->c->qb->insertDataIntoTable("tags_users", [
+                        "tag_id" => $tagBase["id"],
+                        "user_id" => $_SESSION["logged"]["user_id"]
+                    ], false, true)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public function changePassword(Request $request, Response $response)
+    {
+        $email = $request->getParam("email");
+
+    }
 }

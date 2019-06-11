@@ -5,6 +5,7 @@ use Slim\Http\Response;
 use Controllers\UserController;
 use Middleware\RedirectIfAuth;
 use Middleware\RedirectIfUnAuth;
+use Middleware\RedirectIfNoToken;
 
 // Home Route
 $app->get("/", function (Request $request, Response $response) {
@@ -57,8 +58,9 @@ $app->group("", function () {
 
     //My Profile
     $this->get("/id". $_SESSION["logged"]["user_id"], function (Request $request, Response $response) {
-        $user = $this->qb->filterDataByCol("users", "id", $_SESSION["logged"]["user_id"])[0];
-        return $this->view->render($response, "my-profile.twig", compact("user"));
+        $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"])[0];
+        $userInfo = array_merge(["login" => $_SESSION["logged"]["login"]], $userInfo);
+        return $this->view->render($response, "my-profile.twig", compact("userInfo"));
     })->setName("myProfile");
 
     //Change Login
@@ -86,6 +88,40 @@ $app->group("", function () {
         }
         return $this->view->render($response, "profile.twig", compact("user"));
     })->setName("profile");
+
+    //Add Personal Info
+    $this->group("/change-info", function () {
+        $this->get("", function (Request $request, Response $response) {
+            $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"])[0];
+            //TODO : do search name tag with joins
+            $tagsIds = $this->qb->filterDataByCol("tags_users", "user_id", $_SESSION["logged"]["user_id"]);
+            $tagsStr = "";
+            foreach ($tagsIds as $tagId) {
+                $tagName = $this->qb->filterDataByCol("tags", "id", $tagId["tag_id"])[0]["name"];
+                $tagsStr .= "#" . $tagName . ", ";
+            }
+            $userInfo["tags"] = rtrim($tagsStr, ", ");
+            return $this->view->render($response, "change-info.twig", compact("userInfo"));
+        })->setName("change-info");
+        $this->post("", UserController::class . ":changeInfo");
+    });
+
+    $this->group("/change-password", function () {
+       $this->get("", function (Request $request, Response $response) {
+           return $this->view->render($response, "change-password.twig");
+       })->setName("change-password");
+
+       $this->post("", UserController::class . ":changePassword");
+    });
+
+    //Change Password
+    $this->group("/store-password", function () {
+       $this->get("", function (Request $request, Response $response) {
+          return $this->view->render($response, "store-password");
+       })->setName("store-password");
+
+       $this->post("", UserController::class . ":storePassword");
+    })->add(new RedirectIfNoToken($this->c->router));
 })->add(new RedirectIfUnAuth($container["router"]));
 
 

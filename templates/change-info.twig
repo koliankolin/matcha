@@ -1,0 +1,33 @@
+
+
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Change Info
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        <p>Your Sex:</p>
+        <label for="sex_f">Female: <input id="sex_f" name="sex" type="radio" value="1"
+           {% if userInfo.sex == 1 %} checked {% endif %}></label><br>
+        <label for="sex_m">Male: <input id="sex_m" name="sex" type="radio" value="2"
+                    {% if userInfo.sex == 2 %} checked {% endif %}></label><br><br>
+        <label for="first_name">Real Name: <input id="first_name" name="first_name" type="text"
+            value="{{ userInfo.first_name }}"></label><br>
+        <label for="surname">Real Surname: <input id="surname" name="surname" type="text"
+            value="{{ userInfo.surname }}"></label><br>
+        <p>You are searching for:</p>
+        <label for="sex_pref_f">Female: <input id="sex_pref_f" name="sex_pref" type="radio" value="1"
+            {% if userInfo.sex_pref_id == 1 %} checked {% endif %}></label><br>
+        <label for="sex_pref_m">Male: <input id="sex_pref_m" name="sex_pref" type="radio" value="2"
+                    {% if userInfo.sex_pref_id == 2 %} checked {% endif %}></label><br>
+        <label for="sex_pref_b">Everyone: <input id="sex_pref_b" name="sex_pref" type="radio" value="3"
+                    {% if userInfo.sex_pref_id == 3 %} checked {% endif %}></label><br><br>
+        <label for="tags">Your interests: ex. #dogs, #family, #icecreame, etc.</label><br>
+            <textarea name="tags" id="tags" cols="30" rows="5">{{ userInfo.tags }}</textarea><br><br>
+        <label for="biography">Your biography:</label><br>
+            <textarea name="biography" id="biography" cols="30" rows="10">{{ userInfo.biography }}</textarea><br>
+        <button type="submit">Change Profile</button>
+    </form>
+{% endblock %}

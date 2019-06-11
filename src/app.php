@@ -30,13 +30,13 @@ $container["db"] = function () {
 //switch Twig
 $container["view"] = function ($container) use($settings) {
     $view = new Twig($settings["settings"]["renderer"]["template_path"], [
-        "cache" => false
+        "cache" => false,
+        "debug" => true
     ]);
-
     // Instantiate and add Slim specific extension
     $basePath = rtrim(str_ireplace('index.php', '', $container['request']->getUri()->getBasePath()), '/');
     $view->addExtension(new Slim\Views\TwigExtension($container['router'], $basePath));
-
+    $view->addExtension(new \Twig\Extension\DebugExtension());
     return $view;
 };
 
