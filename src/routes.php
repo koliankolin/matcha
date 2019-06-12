@@ -3,6 +3,7 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Controllers\UserController;
+use Controllers\LoaderController;
 use Middleware\RedirectIfAuth;
 use Middleware\RedirectIfUnAuth;
 use Middleware\RedirectIfNoToken;
@@ -15,7 +16,6 @@ $app->get("/", function (Request $request, Response $response) {
 })->setName("home");
 
 // Users Route
-
 
 $app->group("", function () {
     // Login
@@ -46,10 +46,19 @@ $app->group("", function () {
     $this->get("/account-activated", function (Request $request, Response $response) {
         return $this->view->render($response, "account-activated.twig");
     })->setName("account-activated");
+
+    //Forgot password
+    $this->group("/forgot-password", function () {
+        $this->get("", function (Request $request, Response $response) {
+            return $this->view->render($response, "forgot-password.twig");
+        })->setName("forgot-password");
+
+        $this->post("", UserController::class . ":changePassword");
+    });
 })->add(new RedirectIfAuth($container["router"]));
 
 
-$app->group("", function () {
+$app->group("", function () use ($container) {
     //Logout
     $this->get("/logout", function (Request $request, Response $response) {
       unset($_SESSION["logged"]);
@@ -57,11 +66,16 @@ $app->group("", function () {
     })->setName("logout");
 
     //My Profile
-    $this->get("/id". $_SESSION["logged"]["user_id"], function (Request $request, Response $response) {
-        $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"])[0];
-        $userInfo = array_merge(["login" => $_SESSION["logged"]["login"]], $userInfo);
-        return $this->view->render($response, "my-profile.twig", compact("userInfo"));
-    })->setName("myProfile");
+    $this->group("/id". $_SESSION["logged"]["user_id"], function () {
+        $this->get("", function (Request $request, Response $response) {
+            //TODO : Add tags to array
+            $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"])[0];
+            $userInfo = array_merge(["login" => $_SESSION["logged"]["login"]], $userInfo);
+            return $this->view->render($response, "my-profile.twig", compact("userInfo"));
+        })->setName("myProfile");
+
+        $this->post("", LoaderController::class . ":loadPhotosToProfile");
+    });
 
     //Change Login
     $this->group("/change-login", function () {
@@ -106,6 +120,7 @@ $app->group("", function () {
         $this->post("", UserController::class . ":changeInfo");
     });
 
+    //Change Password
     $this->group("/change-password", function () {
        $this->get("", function (Request $request, Response $response) {
            return $this->view->render($response, "change-password.twig");
@@ -114,14 +129,17 @@ $app->group("", function () {
        $this->post("", UserController::class . ":changePassword");
     });
 
-    //Change Password
+    $this->get("/email-sent-password", function (Request $request, Response $response) {
+        return $this->view->render($response, "email-sent.twig");
+    })->setName("email-sent-password")->add(new RedirectIfNoToken($container["router"]));
+
     $this->group("/store-password", function () {
        $this->get("", function (Request $request, Response $response) {
-          return $this->view->render($response, "store-password");
+          return $this->view->render($response, "store-password.twig");
        })->setName("store-password");
 
        $this->post("", UserController::class . ":storePassword");
-    })->add(new RedirectIfNoToken($this->c->router));
+    })->add(new RedirectIfNoToken($container["router"]));
 })->add(new RedirectIfUnAuth($container["router"]));
 
 

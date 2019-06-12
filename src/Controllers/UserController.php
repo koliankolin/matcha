@@ -166,6 +166,24 @@ class UserController extends Controller
     public function changePassword(Request $request, Response $response)
     {
         $email = $request->getParam("email");
+        $this->user->changePasswordUser($email);
+//        $this->user->logoutUser();
+        return $response->withRedirect($this->router->pathFor("email-sent-password"));
+    }
 
+    public function storePassword(Request $request, Response $response)
+    {
+        // Check hashes
+        if ($_SESSION["pass_hash"] !== $request->getParam("hash")) {
+            return $response->withRedirect($this->router->pathFor("home"));
+        }
+        unset($_SESSION["pass_hash"]);
+
+        $newPassword = $request->getParam("newPassword");
+        if ($this->user->storePassword($newPassword)) {
+            $this->user->logoutUser();
+            return $response->write("Password was changed");
+        }
+        return $response->write("Something went wrong");
     }
 }

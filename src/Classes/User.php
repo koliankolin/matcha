@@ -227,18 +227,17 @@ class User
         return mail($newEmail, $letter["subject"], $letter["message"]);
     }
 
-    private function createChangePasswordLetter($hash)
+    private function createChangePasswordLetter($email, $hash)
     {
         $subject = $_SESSION["logged"]["login"] . " | Change Password";
         $message = '
         
         Hello, ' . $_SESSION["logged"]["login"] . '!
         
-        
         You need to reset your password.
         Please click this link to change your password:
         '
-            .$_SERVER["REQUEST_SCHEME"].'://'.$_SERVER["SERVER_NAME"].':'.$_SERVER["SERVER_PORT"].'/store-password?email=' . $this->email .
+            .$_SERVER["REQUEST_SCHEME"].'://'.$_SERVER["SERVER_NAME"].':'.$_SERVER["SERVER_PORT"].'/store-password?email=' . $email .
             '&hash='. $hash . '
         
         ';
@@ -246,7 +245,7 @@ class User
     }
 
     //change password
-    public function changePasswordUser()
+    public function changePasswordUser($email)
     {
         if (!($user = $this->queryBuilder->filterDataByCol(USER::TABLE, "id",
             $_SESSION["logged"]["user_id"]))) {
@@ -260,12 +259,15 @@ class User
         }
 
         $_SESSION["pass_hash"] = $hash;
-        $letter = $this->createChangePasswordLetter($hash);
-        return mail($this->email, $letter["subject"], $letter["message"]);
+        $letter = $this->createChangePasswordLetter($email, $hash);
+        return mail($email, $letter["subject"], $letter["message"]);
     }
 
     public function storePassword($newPassword)
     {
-        $this->queryBuilder->updateDataById("users")
+        return $this->queryBuilder->updateDataById("users", "id",
+            $_SESSION["logged"]["user_id"], [
+               "password" => hash("whirlpool", $newPassword)
+            ]);
     }
 }

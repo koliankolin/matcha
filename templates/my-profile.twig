@@ -37,7 +37,12 @@
     </ul>
 
     <a href="{{ path_for("change-info") }}">Change Personal Info</a><br>
-    <a href="#">Change Password</a><br>
+    <a href="{{ path_for("change-password") }}">Change Password</a><br>
     <a href="{{ path_for("change-email") }}">Change Email</a><br>
-    <a href="{{ path_for("change-login") }}">Change Login</a>
+    <a href="{{ path_for("change-login") }}">Change Login</a><br>
+
+    <form method="post" enctype="multipart/form-data">
+        <input id="photoLoader" name="photos[]" type="file" multiple="multiple">
+        <button type="submit">Upload Photos</button>
+    </form>
 {% endblock %}
