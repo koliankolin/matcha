@@ -6,6 +6,8 @@ use Interop\Container\ContainerInterface;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Classes\Loader;
+use Exception;
+
 
 class LoaderController extends Controller
 {
@@ -20,10 +22,15 @@ class LoaderController extends Controller
     public function loadPhotosToProfile(Request $request, Response $response)
     {
         $photos = $request->getUploadedFiles()["photos"];
-        $dirName = "/var/www/html/data/" . $_SESSION["logged"]["login"] . "/";
-        if ($this->loader->loadPhoto($photos, $dirName)) {
+        if (isset($photos)) {
+            $dirName = "/var/www/html/data/" . $_SESSION["logged"]["login"] . "/";
+            try {
+                $this->loader->loadPhoto($photos, $dirName);
+            } catch (Exception $exception) {
+                return $response->write($exception->getMessage());
+            }
             return $response->withRedirect($this->router->pathFor("myProfile"));
         }
-        return $response->write("Something went wrong");
+        return $response;
     }
 }

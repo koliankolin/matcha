@@ -1,12 +1,44 @@
 {% extends "layouts/main-authorized.twig" %}
 
 {% block title %}
-    Personal Page of user {{ user.login }}
+    Personal Page of user {{ data.userInfo.login }}
 {% endblock %}
 
 {% block content %}
     <ul>
-        <li>Login: {{ user.login }}</li>
-        <li>Email: {{ user.email }}</li>
+        <li>Login: {{ data.userInfo.login }}</li>
+        <li>Name: {{ data.userInfo.first_name }}</li>
+        <li>Surname: {{ data.userInfo.surname }}</li>
+        <li>Sex:
+            {% if data.userInfo.sex == 1  %}
+                Female
+            {% elseif data.userInfo.sex == 2 %}
+                Male
+            {% elseif data.userInfo.sex is not defined or data.userInfo.sex == 3 %}
+                Undefined
+            {% endif %}
+        </li>
+        <li>{% if data.userInfo.sex == 1 %}
+                She
+            {% elseif data.userInfo.sex == 2 %}
+                He
+            {% else %}
+                It
+            {% endif %} prefers:
+            {% if data.userInfo.sex_pref_id == 1 %}
+                Girls
+            {% elseif data.userInfo.sex_pref_id == 2 %}
+                Boys
+            {% else %}
+                Everyone
+            {% endif %}
+        </li>
+        <li>
+            Interests: {{ data.userInfo.tags }}
+        </li>
+        <li>About: {{ data.userInfo.biography }}</li>
     </ul>
+    {% for photo in data.photos %}
+        <img src="{{ photo.photo }}" alt="" width="200" height="200">
+    {% endfor %}
 {% endblock %}

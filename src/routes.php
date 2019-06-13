@@ -4,6 +4,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Controllers\UserController;
 use Controllers\LoaderController;
+use Controllers\DeleterController;
 use Middleware\RedirectIfAuth;
 use Middleware\RedirectIfUnAuth;
 use Middleware\RedirectIfNoToken;
@@ -68,13 +69,35 @@ $app->group("", function () use ($container) {
     //My Profile
     $this->group("/id". $_SESSION["logged"]["user_id"], function () {
         $this->get("", function (Request $request, Response $response) {
-            //TODO : Add tags to array
             $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $_SESSION["logged"]["user_id"])[0];
-            $userInfo = array_merge(["login" => $_SESSION["logged"]["login"]], $userInfo);
-            return $this->view->render($response, "my-profile.twig", compact("userInfo"));
+            if (isset($userInfo)) {
+                $userInfo = array_merge(["login" => $_SESSION["logged"]["login"]], $userInfo);
+            } else
+                $userInfo["login"] = $_SESSION["logged"]["login"];
+
+            //Tags TODO: refactor this code
+            $tags = $this->db->query("
+                            SELECT * FROM tags_users tu
+                            LEFT JOIN tags t ON tu.tag_id=t.id
+                            WHERE tu.user_id = " . $_SESSION["logged"]["user_id"])
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $userInfo["tags"] = "";
+            if (isset($tags)) {
+                foreach ($tags as $tag) {
+                    $userInfo["tags"] .= "#" . $tag["name"] . ", ";
+                }
+                $userInfo["tags"] = rtrim($userInfo["tags"], ", ");
+            }
+
+            //photos
+            $photos = $this->qb->filterDataByCol("photos", "user_id", $_SESSION["logged"]["user_id"]);
+            $data = array_merge(compact("userInfo"), compact("photos"));
+            return $this->view->render($response, "my-profile.twig",
+                compact("data"));
         })->setName("myProfile");
 
         $this->post("", LoaderController::class . ":loadPhotosToProfile");
+        $this->post("/photo/delete", DeleterController::class . ":deletePhoto");
     });
 
     //Change Login
@@ -97,10 +120,36 @@ $app->group("", function () use ($container) {
 
     //Profile
     $this->get("/id{userId}", function (Request $request, Response $response, $args) {
-        if (!($user = $this->qb->filterDataByCol("users", "id", $args["userId"])[0])) {
-            return $this->view->render($response, "user-not-found.twig")->withStatus(404);
+        //TODO: find out how to do it with function
+        if ($user = $this->qb->filterDataByCol("users", "id", $args["userId"])[0]) {
+
+            $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $user["id"])[0];
+            if (isset($userInfo)) {
+                $userInfo = array_merge(["login" => $user["login"]], $userInfo);
+            } else
+                $userInfo["login"] = $user["login"];
+
+            //Tags TODO: refactor this code
+            $tags = $this->db->query("
+                            SELECT * FROM tags_users tu
+                            LEFT JOIN tags t ON tu.tag_id=t.id
+                            WHERE tu.user_id = " . $user["id"])
+                ->fetchAll(PDO::FETCH_ASSOC);
+            $userInfo["tags"] = "";
+            if (isset($tags)) {
+                foreach ($tags as $tag) {
+                    $userInfo["tags"] .= "#" . $tag["name"] . ", ";
+                }
+                $userInfo["tags"] = rtrim($userInfo["tags"], ", ");
+            }
+
+            //photos
+            $photos = $this->qb->filterDataByCol("photos", "user_id", $user["id"]);
+            $data = array_merge(compact("userInfo"), compact("photos"));
+            return $this->view->render($response, "profile.twig", compact("data"));
+
         }
-        return $this->view->render($response, "profile.twig", compact("user"));
+        return $this->view->render($response, "user-not-found.twig")->withStatus(404);
     })->setName("profile");
 
     //Add Personal Info
@@ -141,8 +190,6 @@ $app->group("", function () use ($container) {
        $this->post("", UserController::class . ":storePassword");
     })->add(new RedirectIfNoToken($container["router"]));
 })->add(new RedirectIfUnAuth($container["router"]));
-
-
 
 
 

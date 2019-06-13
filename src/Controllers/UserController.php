@@ -186,4 +186,5 @@ class UserController extends Controller
         }
         return $response->write("Something went wrong");
     }
+
 }

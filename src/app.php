@@ -26,7 +26,6 @@ $container["db"] = function () {
   return new PDO("mysql:host=db;dbname=myDb", "root", "test");
 };
 
-
 //switch Twig
 $container["view"] = function ($container) use($settings) {
     $view = new Twig($settings["settings"]["renderer"]["template_path"], [

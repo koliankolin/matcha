@@ -16,6 +16,7 @@ class User
     private $admin = 0;
     private $queryBuilder;
     private $userId;
+    private $db;
 
     function __construct(array $kwargs)
     {
@@ -32,7 +33,8 @@ class User
         if ($kwargs["user_id"]) {
             $this->userId = $kwargs["user_id"];
         }
-        $this->queryBuilder = new QueryBuilder(["db" => new PDO("mysql:host=db; dbname=myDb", "user", "test")]);
+        $this->db = new PDO("mysql:host=db; dbname=myDb", "user", "test");
+        $this->queryBuilder = new QueryBuilder(["db" => $this->db]);
     }
 
     public function __set($name, $value)
@@ -270,4 +272,5 @@ class User
                "password" => hash("whirlpool", $newPassword)
             ]);
     }
+
 }

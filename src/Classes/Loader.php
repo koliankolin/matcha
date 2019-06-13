@@ -27,9 +27,9 @@ class Loader extends MainClass
 
     public function loadPhoto(Array $photos, $dirName)
     {
-        if (count($photos) > 6 || count($this->qb->filterDataByCol("photos", "user_id",
-                $_SESSION["logged"]["user_id"])) > 6) {
-            return false;
+        if (count($photos) > 4 || count($this->qb->filterDataByCol("photos", "user_id",
+                $_SESSION["logged"]["user_id"])) > 4) {
+            throw new Exception("More then 5 photos");
         }
         foreach ($photos as $photo) {
             if ($photo->getError() === UPLOAD_ERR_OK) {
@@ -42,7 +42,7 @@ class Loader extends MainClass
                     ]);
                 }
             } else {
-                return false;
+                throw new Exception("Upload error");
             }
         }
         return true;

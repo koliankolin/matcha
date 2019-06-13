@@ -1,39 +1,42 @@
 {% extends "layouts/main-authorized.twig" %}
 
 {% block title %}
-    Personal Page of user {{ user.login }}
+    Personal Page of user {{ data.userInfo.login }}
 {% endblock %}
 
 {% block content %}
     <ul>
-        <li>Login: {{ userInfo.login }}</li>
-        <li>Name: {{ userInfo.first_name }}</li>
-        <li>Surname: {{ userInfo.surname }}</li>
+        <li>Login: {{ data.userInfo.login }}</li>
+        <li>Name: {{ data.userInfo.first_name }}</li>
+        <li>Surname: {{ data.userInfo.surname }}</li>
         <li>Sex:
-            {% if userInfo.sex == 1  %}
+            {% if data.userInfo.sex == 1  %}
             Female
-            {% elseif userInfo.sex == 2 %}
+            {% elseif data.userInfo.sex == 2 %}
             Male
-            {% elseif userInfo.sex is not defined or userInfo.sex == 3 %}
+            {% elseif data.userInfo.sex is not defined or data.userInfo.sex == 3 %}
             Undefined
             {% endif %}
         </li>
-        <li>{% if userInfo.sex == 1 %}
+        <li>{% if data.userInfo.sex == 1 %}
             She
-            {% elseif userInfo.sex == 2 %}
+            {% elseif data.userInfo.sex == 2 %}
             He
             {% else %}
             It
             {% endif %} prefers:
-            {% if userInfo.sex_pref_id == 1 %}
+            {% if data.userInfo.sex_pref_id == 1 %}
             Girls
-            {% elseif userInfo.sex_pref_id == 2 %}
+            {% elseif data.userInfo.sex_pref_id == 2 %}
             Boys
             {% else %}
             Everyone
             {% endif %}
         </li>
-        <li>About: {{ userInfo.biography }}</li>
+        <li>
+            Interests: {{ data.userInfo.tags }}
+        </li>
+        <li>About: {{ data.userInfo.biography }}</li>
     </ul>
 
     <a href="{{ path_for("change-info") }}">Change Personal Info</a><br>
@@ -45,4 +48,16 @@
         <input id="photoLoader" name="photos[]" type="file" multiple="multiple">
         <button type="submit">Upload Photos</button>
     </form>
+
+    {% for photo in data.photos %}
+        <div class="photo">
+            <img id="photo_{{ photo.id }}"
+                 src="{{ photo.photo }}" alt="" width="200" height="200">
+            <form action="/id{{ data.userInfo.id }}/photo/delete" method="post">
+                <input type="hidden" id="hidden_{{ photo.id }}" name="photo_id"
+                       value="{{ photo.id }}">
+                <button type="submit">DELETE PHOTO</button>
+            </form>
+        </div>
+    {% endfor %}
 {% endblock %}
