@@ -21,6 +21,12 @@ $queryBuilder->createTable("photos", [
     "photo" => "VARCHAR(255) NOT NULL",
 ], "user_id", "users");
 
+$queryBuilder->createTable("avatars", [
+    "id" => "INT NOT NULL AUTO_INCREMENT",
+    "user_id" => "INT NOT NULL",
+    "avatar" => "VARCHAR(255) NOT NULL",
+], "user_id", "users");
+
 $queryBuilder->createTable("users_info", [
     "id" => "INT NOT NULL AUTO_INCREMENT",
     "user_id" => "INT NOT NULL",
@@ -41,7 +47,14 @@ $queryBuilder->createTable("likes", [
     "id" => "INT NOT NULL AUTO_INCREMENT",
     "user_id_from" => "INT NOT NULL",
     "user_id_to" => "INT NOT NULL",
-    "login_who_likes" => "VARCHAR(255) NOT NULL"
+    "created_at" => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+], "user_id_from", "users");
+
+$queryBuilder->createTable("views", [
+    "id" => "INT NOT NULL AUTO_INCREMENT",
+    "user_id_from" => "INT NOT NULL",
+    "user_id_to" => "INT NOT NULL",
+    "created_at" => "TIMESTAMP NOT NULL"
 ], "user_id_from", "users");
 
 $queryBuilder->createTable("sex_prefs", [

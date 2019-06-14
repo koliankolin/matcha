@@ -21,6 +21,7 @@ class LoaderController extends Controller
 
     public function loadPhotosToProfile(Request $request, Response $response)
     {
+
         $photos = $request->getUploadedFiles()["photos"];
         if (isset($photos)) {
             $dirName = "/var/www/html/data/" . $_SESSION["logged"]["login"] . "/";
@@ -32,5 +33,17 @@ class LoaderController extends Controller
             return $response->withRedirect($this->router->pathFor("myProfile"));
         }
         return $response;
+    }
+
+    public function loadAvatar(Request $request, Response $response)
+    {
+        $avatar = $request->getUploadedFiles()["avatar"];
+        $dirName = "/var/www/html/data/" . $_SESSION["logged"]["login"] . "/";
+        try {
+            $this->loader->loadAvatar($avatar, $dirName);
+        } catch (Exception $exception) {
+            return $response->write($exception->getMessage());
+        }
+        return $response->withRedirect($this->router->pathFor("myProfile"));
     }
 }

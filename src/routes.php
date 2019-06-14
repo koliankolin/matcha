@@ -8,6 +8,7 @@ use Controllers\DeleterController;
 use Middleware\RedirectIfAuth;
 use Middleware\RedirectIfUnAuth;
 use Middleware\RedirectIfNoToken;
+use Controllers\LikerController;
 
 // Home Route
 $app->get("/", function (Request $request, Response $response) {
@@ -91,13 +92,18 @@ $app->group("", function () use ($container) {
 
             //photos
             $photos = $this->qb->filterDataByCol("photos", "user_id", $_SESSION["logged"]["user_id"]);
-            $data = array_merge(compact("userInfo"), compact("photos"));
+
+            //Avatar
+            $avatar = $this->qb->filterDataByCol("avatars", "user_id", $_SESSION["logged"]["user_id"])[0];
+            $data = array_merge(compact("userInfo"), compact("photos"), compact("avatar"));
             return $this->view->render($response, "my-profile.twig",
                 compact("data"));
         })->setName("myProfile");
 
-        $this->post("", LoaderController::class . ":loadPhotosToProfile");
+        $this->post("/photo/upload", LoaderController::class . ":loadPhotosToProfile");
         $this->post("/photo/delete", DeleterController::class . ":deletePhoto");
+        $this->post("/avatar/upload", LoaderController::class . ":loadAvatar");
+        $this->post("/avatar/delete", DeleterController::class . ":deleteAvatar");
     });
 
     //Change Login
@@ -145,12 +151,37 @@ $app->group("", function () use ($container) {
 
             //photos
             $photos = $this->qb->filterDataByCol("photos", "user_id", $user["id"]);
-            $data = array_merge(compact("userInfo"), compact("photos"));
+
+            //check like
+            $isLiked = (empty($this->qb->filterDataByCond("likes", [
+                "user_id_to" => $args["userId"],
+                "user_id_from" => $_SESSION["logged"]["user_id"]
+            ])[0])) ? false : true;
+
+            //avatar
+            $avatar = $this->qb->filterDataByCol("avatars", "user_id", $user["id"])[0];
+            $data = array_merge(
+                compact("userInfo"),
+                compact("photos"),
+                compact("avatar"),
+                compact("isLiked")
+            );
+
+
+
+            //add view TODO: This code add new view with like coz of refreshing page
+            $this->qb->insertDataIntoTable("views", [
+                "user_id_from" => $_SESSION["logged"]["user_id"],
+                "user_id_to" => $user["id"],
+                "created_at" => date("Y-m-d H:i:s")
+            ]);
             return $this->view->render($response, "profile.twig", compact("data"));
 
         }
         return $this->view->render($response, "user-not-found.twig")->withStatus(404);
     })->setName("profile");
+
+    $this->post("/id{userId}/person/like", LikerController::class . ":addLike");
 
     //Add Personal Info
     $this->group("/change-info", function () {

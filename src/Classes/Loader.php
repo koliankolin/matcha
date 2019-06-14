@@ -27,8 +27,8 @@ class Loader extends MainClass
 
     public function loadPhoto(Array $photos, $dirName)
     {
-        if (count($photos) > 4 || count($this->qb->filterDataByCol("photos", "user_id",
-                $_SESSION["logged"]["user_id"])) > 4) {
+        if (count($photos) > 3 || count($this->qb->filterDataByCol("photos", "user_id",
+                $_SESSION["logged"]["user_id"])) > 3) {
             throw new Exception("More then 5 photos");
         }
         foreach ($photos as $photo) {
@@ -46,5 +46,22 @@ class Loader extends MainClass
             }
         }
         return true;
+    }
+
+    public function loadAvatar($avatar, $dirName)
+    {
+        $fileName = $this->moveUploadedFile($dirName, $avatar);
+        if ($fileName) {
+            $this->qb->insertDataIntoTable("avatars", [
+                "user_id" => $_SESSION["logged"]["user_id"],
+                "avatar" =>
+                    "/data/" . $_SESSION["logged"]["login"] . DIRECTORY_SEPARATOR . $fileName
+            ]);
+        } else {
+            throw new Exception("Upload Error");
+        }
+
+        return true;
+
     }
 }

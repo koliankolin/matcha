@@ -24,4 +24,12 @@ class DeleterController extends Controller
 
         return $response->withRedirect($this->router->pathFor("myProfile"));
     }
+
+    public function deleteAvatar(Request $request, Response $response)
+    {
+        $avatarId = $request->getParam("avatar_id");
+        $this->deleter->deleteAvatar($avatarId);
+
+        return $response->withRedirect($this->router->pathFor("myProfile"));
+    }
 }

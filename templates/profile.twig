@@ -5,6 +5,20 @@
 {% endblock %}
 
 {% block content %}
+    <!-- Avatart block -->
+
+    {% if data.avatar is not null %}
+        <img src="{{ data.avatar.avatar }}" alt="" width="200" height="200">
+    {% else %}
+        {% if data.userInfo.sex == 1 %}
+            <img src="/public/img/girl.jpg" alt="" width="200" height="200">
+        {% elseif data.userInfo.sex == 2 %}
+            <img src="/public/img/jason.jpg" alt="" width="200" height="200">
+        {% else %}
+            <img src="/public/img/it.jpg" alt="" width="200" height="200">
+        {% endif %}
+    {% endif %}
+
     <ul>
         <li>Login: {{ data.userInfo.login }}</li>
         <li>Name: {{ data.userInfo.first_name }}</li>
@@ -15,7 +29,7 @@
             {% elseif data.userInfo.sex == 2 %}
                 Male
             {% elseif data.userInfo.sex is not defined or data.userInfo.sex == 3 %}
-                Undefined
+                It
             {% endif %}
         </li>
         <li>{% if data.userInfo.sex == 1 %}
@@ -41,4 +55,15 @@
     {% for photo in data.photos %}
         <img src="{{ photo.photo }}" alt="" width="200" height="200">
     {% endfor %}
+    <br>
+    <form action="/id{{ data.userInfo.id }}/person/like" method="post">
+        <input type="hidden" name="like" value="{{ data.userInfo.id }}">
+        <button class="btn {% if data.isLiked %} btn-primary
+            {% else %}
+            btn-outline-primary
+        {% endif %}" type="submit">{% if data.isLiked %} UNLIKE this person
+            {% else %}
+                LIKE this person
+            {% endif %}</button>
+    </form>
 {% endblock %}

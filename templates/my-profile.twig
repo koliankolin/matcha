@@ -5,6 +5,35 @@
 {% endblock %}
 
 {% block content %}
+    <!-- Avatart block -->
+
+    {% if data.avatar is not null %}
+        <img src="{{ data.avatar.avatar }}" alt="" width="200" height="200">
+    {% else %}
+        {% if data.userInfo.sex == 1 %}
+            <img src="/public/img/girl.jpg" alt="" width="200" height="200">
+        {% elseif data.userInfo.sex == 2 %}
+            <img src="/public/img/jason.jpg" alt="" width="200" height="200">
+        {% else %}
+            <img src="/public/img/it.jpg" alt="" width="200" height="200">
+        {% endif %}
+    {% endif %}
+
+    <p>Upload New Avatar</p>
+
+    <form action="/id{{ data.userInfo.id }}/avatar/upload" method="post" enctype="multipart/form-data">
+        <input id="avatar" name="avatar" type="file">
+        <button type="submit">Upload Avatar</button>
+    </form>
+
+    <p>Delete Avatar</p>
+    <form action="/id{{ data.userInfo.id }}/avatar/delete" method="post">
+        <input type="hidden" id="hidden_{{ data.avatar.id }}" name="avatar_id"
+               value="{{ data.avatar.id }}">
+    <button type="submit">DELETE AVATAR</button>
+    </form>
+    <br>
+
     <ul>
         <li>Login: {{ data.userInfo.login }}</li>
         <li>Name: {{ data.userInfo.first_name }}</li>
@@ -15,7 +44,7 @@
             {% elseif data.userInfo.sex == 2 %}
             Male
             {% elseif data.userInfo.sex is not defined or data.userInfo.sex == 3 %}
-            Undefined
+            It
             {% endif %}
         </li>
         <li>{% if data.userInfo.sex == 1 %}
@@ -39,13 +68,15 @@
         <li>About: {{ data.userInfo.biography }}</li>
     </ul>
 
+
     <a href="{{ path_for("change-info") }}">Change Personal Info</a><br>
     <a href="{{ path_for("change-password") }}">Change Password</a><br>
     <a href="{{ path_for("change-email") }}">Change Email</a><br>
     <a href="{{ path_for("change-login") }}">Change Login</a><br>
 
-    <form method="post" enctype="multipart/form-data">
-        <input id="photoLoader" name="photos[]" type="file" multiple="multiple">
+    <p>Upload Images</p>
+    <form action="/id{{ data.userInfo.id }}/photo/upload" method="post" enctype="multipart/form-data">
+        <input id="photos" name="photos[]" type="file" multiple="multiple">
         <button type="submit">Upload Photos</button>
     </form>
 

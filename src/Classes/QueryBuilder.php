@@ -58,6 +58,7 @@ class QueryBuilder
         } else
             $sql .= ")";
         $statement = $this->db->prepare($sql);
+
 //        $statement->bindParam(":tableName", $tableName);
         return $statement->execute();
     }
@@ -145,6 +146,23 @@ class QueryBuilder
             $filterStr = rtrim($filterStr, ", ");
         }
         $sql = "SELECT * FROM $table WHERE $col in ($filterStr)";
+        $statement = $this->db->prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function filterDataByCond($table, array $colsAndValues)
+    {
+        $strSql = "";
+        foreach ($colsAndValues as $idCol => $id) {
+            if (is_numeric($id)) {
+                $strSql .= $idCol . "=" . $id . " AND ";
+            } else {
+                $strSql .= $idCol . "=" . "'" . $id . "'" . " AND ";
+            }
+        }
+        $strSql = rtrim($strSql, " AND ");
+        $sql = "SELECT * FROM $table WHERE $strSql";
         $statement = $this->db->prepare($sql);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);

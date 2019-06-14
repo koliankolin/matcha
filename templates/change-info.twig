@@ -12,7 +12,9 @@
         <label for="sex_f">Female: <input id="sex_f" name="sex" type="radio" value="1"
            {% if userInfo.sex == 1 %} checked {% endif %}></label><br>
         <label for="sex_m">Male: <input id="sex_m" name="sex" type="radio" value="2"
-                    {% if userInfo.sex == 2 %} checked {% endif %}></label><br><br>
+                    {% if userInfo.sex == 2 %} checked {% endif %}></label><br>
+        <label for="sex_it">It: <input id="sex_it" name="sex" type="radio" value="3"
+                    {% if userInfo.sex != 2 and userInfo.sex != 1 %} checked {% endif %}></label><br><br>
         <label for="first_name">Real Name: <input id="first_name" name="first_name" type="text"
             value="{{ userInfo.first_name }}"></label><br>
         <label for="surname">Real Surname: <input id="surname" name="surname" type="text"
