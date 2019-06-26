@@ -18,7 +18,7 @@ The main idea is to repeat general functionality of dating headliners like Badoo
 
 3. Application will be available on 8080 port of ip your docker machine
 
-###Already done:
+#### Already done:
 
 * Sign up, Login, Logout
 * Users' profiles with additional information
@@ -28,7 +28,7 @@ The main idea is to repeat general functionality of dating headliners like Badoo
 * Ability to look at all views and likes of your profile
  
 
-###TODO:
+#### TODO:
 
 * 'Smart' finder. Coefficients of like, geo location, etc.
 * Chat with two-side-liked people
