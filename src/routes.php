@@ -220,7 +220,44 @@ $app->group("", function () use ($container) {
 
        $this->post("", UserController::class . ":storePassword");
     })->add(new RedirectIfNoToken($container["router"]));
+
+    // View all views and likes
+    $this->group("/views-and-likes", function () {
+        $this->get("", function (Request $request, Response $response) {
+            $viewsSql = "
+            SELECT * 
+            FROM views v 
+            LEFT JOIN users u 
+                ON v.user_id_from = u.id 
+            WHERE v.user_id_to = {$_SESSION["logged"]["user_id"]}
+            ";
+
+            $likesSql = "
+            SELECT * 
+            FROM likes l 
+            LEFT JOIN users u 
+                ON l.user_id_from = u.id 
+            WHERE l.user_id_to = {$_SESSION["logged"]["user_id"]}
+            ";
+
+            $views = ["views" => $this->db->query($viewsSql)->fetchALL(PDO::FETCH_ASSOC)];
+            $likes = $this->db->query($likesSql)->fetchALL(PDO::FETCH_ASSOC);
+            $usersWhoLiked = $this->qb->filterDataByCol("likes", "user_id_from", $_SESSION["logged"]["user_id"]);
+            // For each like check opposite like
+
+            for ($i = 0; $i < count($likes); $i++) {
+                $userIdWhoseLike = $likes[$i]["user_id_from"];
+                foreach ($usersWhoLiked as $user) {
+                    $userIdToWhomLike = $user["user_id_to"];
+                    if ($userIdToWhomLike === $userIdWhoseLike) {
+                        $likes[$i]["both_liked"] = true;
+                    }
+                }
+            }
+
+            $data = array_merge($views, ["likes" => $likes]);
+
+            return $this->view->render($response, "views-and-likes.twig", compact("data"));
+        })->setName("views-and-likes");
+    });
 })->add(new RedirectIfUnAuth($container["router"]));
-
-
-

@@ -1,0 +1,55 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Views and likes of user
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <p>Views</p>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Who</th>
+                <th scope="col">When</th>
+            </tr>
+            </thead>
+            <tbody>
+            {%  for user in data.views %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <th scope="row"><a href="/id{{ user.user_id_from }}">{{ user.login }}</a></th>
+                    <th scope="row">{{ user.created_at }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <p>Likes</p>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Who</th>
+                <th scope="col">When</th>
+                <th scope="col">Chat</th>
+            </tr>
+            </thead>
+            <tbody>
+            {%  for user in data.likes %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <th scope="row"><a href="/id{{ user.user_id_from }}">{{ user.login }}</a></th>
+                    <th scope="row">{{ user.created_at }}</th>
+                    <th scope="row">
+                        {% if user.both_liked %}
+                            <a href="#">Begin Chat</a>
+                        {% endif %}
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

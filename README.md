@@ -1,37 +1,27 @@
-# Like Tinder or Badoo Application
+# Slim Framework 3 Skeleton Application
 
-The main idea is to repeat general functionality of dating headliners like Badoo and Tinder
+Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+
+This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
 
 ## Install the Application
 
-1. Install dependencies:
+Run this command from the directory in which you want to install your new Slim Framework application.
 
-        composer install
+    php composer.phar create-project slim/slim-skeleton [my-app-name]
 
-2. Install docker environment:
-        
-        docker-compose up --build -d
+Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
 
-3. Install tables for database:
-    
-        http://ip-your-docker-machine:8080/src/setup.php
+* Point your virtual host document root to your new application's `public/` directory.
+* Ensure `logs/` is web writeable.
 
-3. Application will be available on 8080 port of ip your docker machine
+To run the application in development, you can run these commands 
 
-#### Already done:
+	cd [my-app-name]
+	php composer.phar start
 
-* Sign up, Login, Logout
-* Users' profiles with additional information
-* Tags of interests
-* Uploading and deleting photos and avatars
-* Likability of accounts
-* Ability to look at all views and likes of your profile
- 
+Run this command in the application directory to run the test suite
 
-#### TODO:
+	php composer.phar test
 
-* 'Smart' finder. Coefficients of like, geo location, etc.
-* Chat with two-side-liked people
-* Geo location
-* Notification about likes and views
-
+That's it! Now go build something cool.
