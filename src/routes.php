@@ -133,8 +133,11 @@ $app->group("", function () use ($container) {
             $userInfo = $this->qb->filterDataByCol("users_info", "user_id", $user["id"])[0];
             if (isset($userInfo)) {
                 $userInfo = array_merge(["login" => $user["login"]], $userInfo);
-            } else
+            } else {
                 $userInfo["login"] = $user["login"];
+                $userInfo["id"] = $args["userId"];
+            }
+
 
             //Tags TODO: refactor this code
             $tags = $this->db->query("
