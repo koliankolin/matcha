@@ -1,0 +1,64 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Chat for users
+{% endblock %}
+
+{% block content %}
+    {#    {{ dump(data) }}#}
+    <div class="container">
+        <form action="" method="post">
+            <div id="chatResult" class="border border-primary"
+                 style="min-height: 300px; display: flex; flex-direction: column">
+                {% for message in data.messages %}
+                    {% if message.user_id_from == data.userFrom %}
+                        <div style="display: flex; justify-content: left; width: 100%">
+                            <div style="background-color: #6ee7ff; width: max-content; margin-bottom: 2px"
+                                 class="rounded-pill text-right flex-right">
+                                <p style="margin: 0 20px"><b>You: {{ message.created_at }}</b></p>
+                                <p style="margin: 0 20px">{{ message.message }}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 2px; width: 100%">
+                            <div style="background-color: #2db667; width: max-content;" class="rounded-pill text-left">
+                                <p style="margin: 0 20px"><b>Partner: {{ message.created_at }}</b></p>
+                                <p style="margin: 0 20px">{{ message.message }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <input type="text" name="message" width="300" required>
+            <button type="submit">Send Massage</button>
+        </form>
+    </div>
+
+    {#    <script>#}
+    {#        function setComments(post, elemCount, parent) {#}
+    {#            let request = new XMLHttpRequest(),#}
+    {#                dataPost = new Map([['id_content', post.content.id]]);#}
+
+    {#            requestServer(request, 'post', '/feed/get_comments', dataPost);#}
+    {#            request.onreadystatechange = function() {#}
+    {#                if (this.readyState === 4) {#}
+    {#                    if (this.status === 200) {#}
+    {#                        let jsonComments = JSON.parse(this.responseText);#}
+
+    {#                        if (Array.isArray(jsonComments)) {#}
+    {#                            jsonComments.forEach(function(comment) {#}
+    {#                                parent.appendChild(getViewComment(new Comment(comment)));#}
+    {#                            });#}
+    {#                            parent.appendChild(getReplyComment(elemCount, parent));#}
+    {#                        } else if (this.responseText === 'non-activated') {#}
+    {#                            showError('locked! activate your account!');#}
+    {#                        }#}
+    {#                    } else {#}
+    {#                        showError('server status: ' + this.statusText);#}
+    {#                    }#}
+    {#                }#}
+    {#            }#}
+    {#        }#}
+    {#    </script>#}
+
+{% endblock %}

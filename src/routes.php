@@ -9,6 +9,7 @@ use Middleware\RedirectIfAuth;
 use Middleware\RedirectIfUnAuth;
 use Middleware\RedirectIfNoToken;
 use Controllers\LikerController;
+use Controllers\ChatController;
 
 // Home Route
 $app->get("/", function (Request $request, Response $response) {
@@ -260,4 +261,38 @@ $app->group("", function () use ($container) {
             return $this->view->render($response, "views-and-likes.twig", compact("data"));
         })->setName("views-and-likes");
     });
+
+    //Chat
+    $this->group("/chat", function () {
+       $this->get("", function (Request $request, Response $response) {
+           $messagesFrom = $this->qb->filterDataByCond("messages", [
+               "user_id_from" => $_SESSION["logged"]["user_id"],
+               "user_id_to" => $request->getParam("user_id_to")
+           ]);
+
+           $messagesTo = $this->qb->filterDataByCond("messages", [
+               "user_id_from" => $request->getParam("user_id_to"),
+               "user_id_to" => $_SESSION["logged"]["user_id"]
+           ]);
+
+           $messages = array_merge($messagesFrom, $messagesTo);
+           uasort($messages, function ($a, $b) {
+               if ($a["created_at"] === $b["created_at"]) {
+                   return 0;
+               }
+               return ($a["created_at"] < $b["created_at"]) ? -1 : 1;}
+               );
+
+           $data = [
+               "messages" => $messages,
+               "userFrom" => $_SESSION["logged"]["user_id"],
+               "userTo" => $request->getParam("user_id_to")
+           ];
+
+           return $this->view->render($response, "chat.twig", compact("data"));
+       })->setName("chat");
+       $this->post("", ChatController::class . ":sendMessage");
+    });
+
+
 })->add(new RedirectIfUnAuth($container["router"]));

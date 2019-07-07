@@ -1,4 +1,4 @@
-/vendor/
 /logs/*
+/vendor
 !/logs/README.md
 /.idea/

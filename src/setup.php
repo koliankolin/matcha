@@ -101,6 +101,16 @@ $queryBuilder->createTable("tags", [
 
     &&
 
+$queryBuilder->createTable("messages", [
+    "id" => "INT NOT NULL AUTO_INCREMENT",
+    "user_id_from" => "INT NOT NULL",
+    "user_id_to" => "INT NOT NULL",
+    "message" => "TEXT NOT NULL",
+    "created_at" => "TIMESTAMP NOT NULL"
+])
+
+    &&
+
 $queryBuilder->createTable("tags_users", [
     "id" => "INT NOT NULL AUTO_INCREMENT",
     "tag_id" => "INT NOT NULL",

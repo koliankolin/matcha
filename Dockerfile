@@ -11,7 +11,7 @@ RUN apt-get update && \
 	apt-get install -y ca-certificates openssh-server libssl-dev ufw sudo
 
 # Installs php modules
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo pdo_mysql sockets
 
 #RUN mkdir /var/www/html/src
 RUN mkdir /var/www/html/data && chown -R www-data:www-data /var/www/html/data
@@ -44,6 +44,11 @@ RUN echo "mailhub=mail" >> /etc/ssmtp/ssmtp.conf
 RUN echo "sendmail_path=sendmail -i -t" >> /usr/local/etc/php/conf.d/docker-php-sendmail.ini
 
 RUN echo "localhost mail" >> /etc/hosts
+
+# Turn websockets
+
+RUN sed -i -e 's/;extension=php_sockets.dll/extension=php_sockets.dll/g' /usr/local/etc/php/php.ini-development
+RUN sed -i -e 's/;extension=php_sockets.dll/extension=php_sockets.dll/g' /usr/local/etc/php/php.ini-production
 
 EXPOSE 80
 EXPOSE 443
