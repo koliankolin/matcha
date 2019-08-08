@@ -23,6 +23,7 @@ class LikerController extends Controller
         $toUserId = $request->getParam("like");
         try {
             $this->liker->addLike($_SESSION["logged"]["user_id"], $toUserId, date("Y-m-d H:i:s"));
+            $data['message'] = 'Someone liked you';
         } catch (Exception $exception) {
             $response = $response->write($exception->getMessage());
         }

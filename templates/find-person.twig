@@ -1,0 +1,43 @@
+{% extends "layouts/main-authorized.twig" %}
+
+{% block title %}
+    Find Person
+{% endblock %}
+
+{% block content %}
+    <div class="container text-center">
+        <h1>Find someone</h1>
+        <form action="" class="form-group" method="post">
+            <p>Partner's sex:</p>
+            <label for="sex_f">Girls: <input type="radio" id="sex_f" name="sex" value="1"></label><br>
+            <label for="sex_m">Boys: <input type="radio" id="sex_m" name="sex" value="2"></label><br>
+            <label for="sex_b">I don't care about sex: <input type="radio" id="sex_b" name="sex" value="3"></label><br><br>
+            <p>Interests</p>
+            {% for interest in data.interests %}
+                <label for="interest_{{ loop.index }}">{{ interest.name }}
+                    <input type="checkbox" id="interest_{{ loop.index }}" value="{{ interest.tag_id }}" name="interests[]">
+                </label><br>
+            {% endfor %}
+            <br><p>Location</p>
+            <label for="near">Near <input type="radio" id="near" name="location" value="1"></label><br>
+            <label for="far">I don't care about location <input type="radio" id="far" name="location" value="2"></label><br>
+            <button type="submit" class="btn btn-primary">Find someone</button>
+        </form>
+
+        <div>
+            {% if data.foundUsers %}
+                {% for user in data.foundUsers %}
+                    <div>
+                        <a href="/id{{ user.id }}">{{ user.login }}</a>
+                    </div>
+                {% endfor %}
+                {% else %}
+                <div>
+                    Nobody was found
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}

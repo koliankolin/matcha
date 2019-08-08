@@ -13,15 +13,16 @@
     ],
     "require": {
         "php": ">=5.6",
+        "ext-json": "*",
+        "ext-mysqli": "*",
+        "ext-openssl": "*",
+        "ext-pdo": "*",
+        "ext-sockets": "*",
         "monolog/monolog": "^1.17",
+        "pusher/pusher-php-server": "^3.4",
         "slim/php-view": "^2.0",
         "slim/slim": "^3.1",
-        "slim/twig-view": "^2.5",
-        "ext-mysqli": "*",
-        "ext-json": "*",
-        "ext-pdo": "*",
-        "ext-openssl": "*",
-        "ext-sockets": "*"
+        "slim/twig-view": "^2.5"
     },
     "require-dev": {
         "phpunit/phpunit": ">=5.0"

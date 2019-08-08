@@ -10,6 +10,8 @@ use Middleware\RedirectIfUnAuth;
 use Middleware\RedirectIfNoToken;
 use Controllers\LikerController;
 use Controllers\ChatController;
+use Controllers\FinderController;
+use Classes\Finder;
 
 // Home Route
 $app->get("/", function (Request $request, Response $response) {
@@ -295,6 +297,34 @@ $app->group("", function () use ($container) {
            return $this->view->render($response, "chat.twig", compact("data"));
        })->setName("chat");
        $this->post("", ChatController::class . ":sendMessage");
+    });
+
+
+    // Find Person
+    $this->group("/find-person", function () {
+        $this->get("", function (Request $request, Response $response) {
+            $sql = "
+            SELECT * FROM tags_users tu
+            LEFT JOIN tags t ON t.id = tu.tag_id
+            WHERE tu.user_id = {$_SESSION["logged"]["user_id"]}
+            ";
+
+            $interests = $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
+
+
+            $data = [
+                "interests" => $interests,
+            ];
+
+
+            return $this->view->render($response, "find-person.twig", compact("data"));
+        })->setName("find-person");
+
+        $this->post("", FinderController::class . ":findPerson");
     });
 
 

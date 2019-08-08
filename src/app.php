@@ -38,4 +38,3 @@ $container["view"] = function ($container) use($settings) {
     $view->addExtension(new \Twig\Extension\DebugExtension());
     return $view;
 };
-

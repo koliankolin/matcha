@@ -1,5 +1,6 @@
 FROM phpstorm/php-71-apache-xdebug
 
+COPY ./.htaccess /var/www/html
 # Load extra Apache modules
 RUN a2enmod rewrite
 

@@ -6,41 +6,50 @@
 
 {% block content %}
     <!-- Avatart block -->
-
+<div class="container text-center">
+    <div>
+        <div class="text-center m-5">
     {% if data.avatar is not null %}
-        <img src="{{ data.avatar.avatar }}" alt="" width="200" height="200">
+        <img class="img-thumbnail" src="{{ data.avatar.avatar }}" alt="" width="200" height="200">
     {% else %}
         {% if data.userInfo.sex == 1 %}
-            <img src="/public/img/girl.jpg" alt="" width="200" height="200">
+            <img class="img-thumbnail" src="/public/img/girl.jpg" alt="" width="200" height="200">
         {% elseif data.userInfo.sex == 2 %}
-            <img src="/public/img/jason.jpg" alt="" width="200" height="200">
+            <img class="img-thumbnail" src="/public/img/jason.jpg" alt="" width="200" height="200">
         {% else %}
-            <img src="/public/img/it.jpg" alt="" width="200" height="200">
+            <img class="img-thumbnail" src="/public/img/it.jpg" alt="" width="200" height="200">
         {% endif %}
     {% endif %}
-
-    <p>Upload New Avatar</p>
+        </div>
+        <div class="text-center m-3">
+    <p class="h3">Upload New Avatar</p>
 
     <form action="/id{{ data.userInfo.id }}/avatar/upload" method="post" enctype="multipart/form-data">
         <input id="avatar" name="avatar" type="file">
-        <button type="submit">Upload Avatar</button>
+        <button class="btn btn-primary" type="submit">Upload Avatar</button>
     </form>
-
-    <p>Delete Avatar</p>
+        </div>
+        <div class="text-center">
+    <p class="h3">Delete Avatar</p>
     <form action="/id{{ data.userInfo.id }}/avatar/delete" method="post">
         <input type="hidden" id="hidden_{{ data.avatar.id }}" name="avatar_id"
                value="{{ data.avatar.id }}">
-    <button type="submit">DELETE AVATAR</button>
+    <button class="btn btn-primary" type="submit">DELETE AVATAR</button>
     </form>
     <br>
+        </div>
+    </div>
 
+    <div class="text-center">
     <a href="{{ path_for("views-and-likes") }}">Check your likes and views</a><br><br>
+    </div>
 
-    <ul>
-        <li>Login: {{ data.userInfo.login }}</li>
-        <li>Name: {{ data.userInfo.first_name }}</li>
-        <li>Surname: {{ data.userInfo.surname }}</li>
-        <li>Sex:
+    <div class="text-center m-5">
+    <ul class="list-group">
+        <li class="list-group-item">Login: {{ data.userInfo.login }}</li>
+        <li class="list-group-item">Name: {{ data.userInfo.first_name }}</li>
+        <li class="list-group-item">Surname: {{ data.userInfo.surname }}</li>
+        <li class="list-group-item">Sex:
             {% if data.userInfo.sex == 1  %}
             Female
             {% elseif data.userInfo.sex == 2 %}
@@ -49,7 +58,7 @@
             It
             {% endif %}
         </li>
-        <li>{% if data.userInfo.sex == 1 %}
+        <li class="list-group-item">{% if data.userInfo.sex == 1 %}
             She
             {% elseif data.userInfo.sex == 2 %}
             He
@@ -64,24 +73,29 @@
             Everyone
             {% endif %}
         </li>
-        <li>
+        <li class="list-group-item">
             Interests: {{ data.userInfo.tags }}
         </li>
-        <li>About: {{ data.userInfo.biography }}</li>
+        <li class="list-group-item">About: {{ data.userInfo.biography }}</li>
     </ul>
+    </div>
 
-
+    <div class="text-center">
     <a href="{{ path_for("change-info") }}">Change Personal Info</a><br>
     <a href="{{ path_for("change-password") }}">Change Password</a><br>
     <a href="{{ path_for("change-email") }}">Change Email</a><br>
     <a href="{{ path_for("change-login") }}">Change Login</a><br>
+    </div>
 
-    <p>Upload Images</p>
+    <div class="text-center m-5">
+    <p class="h3">Upload Images</p>
     <form action="/id{{ data.userInfo.id }}/photo/upload" method="post" enctype="multipart/form-data">
         <input id="photos" name="photos[]" type="file" multiple="multiple">
-        <button type="submit">Upload Photos</button>
+        <button class="btn btn-primary" type="submit">Upload Photos</button>
     </form>
+    </div>
 
+    <div class="text-center">
     {% for photo in data.photos %}
         <div class="photo">
             <img id="photo_{{ photo.id }}"
@@ -89,8 +103,10 @@
             <form action="/id{{ data.userInfo.id }}/photo/delete" method="post">
                 <input type="hidden" id="hidden_{{ photo.id }}" name="photo_id"
                        value="{{ photo.id }}">
-                <button type="submit">DELETE PHOTO</button>
+                <button class="btn btn-primary" type="submit">DELETE PHOTO</button>
             </form>
         </div>
+    </div>
     {% endfor %}
+</div>
 {% endblock %}
